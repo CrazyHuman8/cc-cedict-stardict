@@ -1,0 +1,47 @@
+name: Build latest CC-CEDICT StarDict
+
+on:
+  workflow_dispatch:          # allows manual trigger
+  schedule:
+    - cron: '0 0 1 * *'      # optional: runs on the 1st of every month
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install penelope (Python dictionary converter)
+        run: pip install penelope
+
+      - name: Download latest CC-CEDICT data
+        run: |
+          curl -L -o cedict_ts.u8.zip "https://cc-cedict.org/editor/editor.php?handler=Download&type=1"
+          unzip cedict_ts.u8.zip
+          mv cedict_ts.u8 cedict.csv
+
+      - name: Build the dictionary with liamsaliba's tool
+        run: cargo run
+
+      - name: Convert to StarDict format
+        run: |
+          penelope -i cedict.csv -j csv --csv-fs "\t" --csv-ls "\n\n" \
+            -f cn -t en -p stardict -o cedict.zip \
+            --merge-definitions --merge-separator "\n" -d \
+            --title "CC-CEDICT 汉英词典"
+          unzip cedict.zip
+
+      - name: Upload dictionary files
+        uses: actions/upload-artifact@v4
+        with:
+          name: cc-cedict-stardict-latest
+          path: |
+            cedict.ifo
+            cedict.idx
+            cedict.dict.dz
