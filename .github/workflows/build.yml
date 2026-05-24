@@ -3,11 +3,11 @@ name: Build latest CC-CEDICT StarDict
 on:
   workflow_dispatch:          # allows manual trigger
   schedule:
-    - cron: '0 0 1 * *'      # optional: runs on the 1st of every month
+    - cron: '0 0 1 * *'      # optional: monthly rebuild
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04     # Python 3.10 has 'imp' module needed by penelope
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
       - name: Install penelope (Python dictionary converter)
         run: pip install penelope
 
-      - name: Download latest CC-CEDICT data (raw text)
+      - name: Download latest CC-CEDICT data (raw text mirror)
         run: |
           curl -L -o cedict.csv "https://raw.githubusercontent.com/nicfab/cc-cedict/main/cedict_ts.u8"
 
