@@ -20,11 +20,9 @@ jobs:
       - name: Install penelope (Python dictionary converter)
         run: pip install penelope
 
-      - name: Download latest CC-CEDICT data
+      - name: Download latest CC-CEDICT data (raw text)
         run: |
-          curl -L -o cedict_ts.u8.zip "https://cc-cedict.org/editor/editor_export_cedict.php?type=1"
-          unzip cedict_ts.u8.zip
-          mv cedict_ts.u8 cedict.csv
+          curl -L -o cedict.csv "https://raw.githubusercontent.com/nicfab/cc-cedict/main/cedict_ts.u8"
 
       - name: Build the dictionary with liamsaliba's tool
         run: cargo run
