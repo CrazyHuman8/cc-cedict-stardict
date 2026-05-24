@@ -3,7 +3,7 @@ name: Build latest CC-CEDICT StarDict
 on:
   workflow_dispatch:          # allows manual trigger
   schedule:
-    - cron: '0 0 1 * *'      # runs on the 1st of every month (optional)
+    - cron: '0 0 1 * *'      # optional: runs on the 1st of every month
 
 jobs:
   build:
@@ -12,13 +12,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
 
-      - name: Install penelope
-        run: cargo install penelope
+      - name: Install penelope (Python dictionary converter)
+        run: pip install penelope
 
       - name: Download latest CC-CEDICT data
         run: |
